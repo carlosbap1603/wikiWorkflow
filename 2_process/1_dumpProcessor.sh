@@ -15,7 +15,6 @@ do
 	PREFIX=${LANG}wiki-${DATE}
 
 	hdfs dfs -rm -r $OUT_PATH
-	hdfs dfs -mkdir -p $DUMP_PATH/langlinks
 	
 	echo ""
 	echo "-------------------------------------------------------------------------------------------------"
@@ -23,6 +22,18 @@ do
 	echo "-------------------------------------------------------------------------------------------------"
 	echo ""
 
-	time spark-submit --class ch.epfl.lts2.wikipedia.DumpProcessor --master 'yarn' --deploy-mode cluster --packages org.rogach:scallop_2.11:3.1.5,com.datastax.spark:spark-cassandra-connector_2.11:2.4.0 ~/Code/Scala/sparkwiki/target/scala-2.11/sparkwiki_2.11-0.11.0.jar --dumpPath $DUMP_PATH --outputPath $OUT_PATH --namePrefix $PREFIX &
+	time spark-submit --class ch.epfl.lts2.wikipedia.DumpProcessor --master 'yarn' --deploy-mode cluster --packages org.rogach:scallop_2.11:3.1.5 ~/Code/Scala/sparkwiki/target/scala-2.11/sparkwiki_2.11-0.11.0.jar --dumpPath $DUMP_PATH --outputPath $OUT_PATH --namePrefix $PREFIX &
+
+
+	OTHER_LANG=${LANGUAGES/$LANG/$EMPTY}
+
+        echo ""
+        echo "----------------------------------------------------------------------------------------------------------------"
+        echo "DumpParser --dumpPath $DUMP_PATH --outputPath $OUT_PATH/langlinks/dumps --languages $OTHER_LANG"
+        echo "----------------------------------------------------------------------------------------------------------------"
+        echo ""
+
+        spark-submit --class ch.epfl.lts2.wikipedia.DumpParser --master 'yarn' --deploy-mode cluster --packages org.rogach:scallop_2.11:3.1.5 ~/Code/Scala/sparkwiki/target/scala-2.11/sparkwiki_2.11-0.11.0.jar --dumpFilePaths $DUMP_PATH/$PREFIX-langlinks.sql.bz2 --dumpType langlinks --outputPath $OUT_PATH/langlinks/dumps --languages $OTHER_LANG &
+
 
 done

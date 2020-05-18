@@ -4,8 +4,8 @@ LANG=$3
 DATE=$4
 
 
-FILES="page.sql redirect.sql category.sql categorylinks.sql pagelinks.sql langlinks.sql"
-#FILES="pagelinks.sql langlinks.sql"
+FILES=#"page.sql redirect.sql category.sql categorylinks.sql pagelinks.sql langlinks.sql"
+FILES="pagelinks.sql langlinks.sql"
 
 hdfs dfs -mkdir -p $HDFS_DIR/$DATE/$LANG
 
@@ -25,7 +25,7 @@ do
 	hdfs dfs -put $TEMP_FOLDER/$WIKI_DUMP_NAME.bz2 $HDFS_DIR/$DATE/$LANG/
 	
 	rm $TEMP_FOLDER/$WIKI_DUMP_NAME.gz
-	rm $TEMP_FOLDER/$WIKI_DUMP_NAME.bz2
+	#rm $TEMP_FOLDER/$WIKI_DUMP_NAME.bz2
 	echo "Succesfully downloaded the latest $LANG-language Wikipedia dump to $WIKI_DUMP_NAME"
 done
 
